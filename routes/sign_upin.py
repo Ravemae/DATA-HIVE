@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
-from model import User
-from schemas  import Add_user, hash_password
+from models import User
+from schem  import Add_user, hash_password
 from sqlmodel import Session
 from database import get_session
 signup =  APIRouter()

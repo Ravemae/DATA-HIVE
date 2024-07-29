@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 from datetime import datetime, timedelta
 from sqlmodel import Session, select
 from database import get_session
-from model import Admin, User
+from models import Admin, User
 
 # Logging configuration
 logging.basicConfig(level=logging.INFO)

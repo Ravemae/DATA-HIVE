@@ -6,6 +6,7 @@ from auth import authenticate_user, create_access_token, ACCESS_TOKEN_EXPIRE_MIN
 from database import get_session
 from routes.sign_upin import signup
 from routes.users import users_route
+from routes.payments import payment_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -39,6 +40,7 @@ async def login_for_access_token(
 
 app.include_router(signup, tags=['Signup'])
 app.include_router(users_route, tags=['Users'])
+app.include_router(payment_router, tags=['Payments'])
 
 # from .database import create_db_and_tables, get_db
 # from . import crud, models, schemas, analysis, ai, visualization, export
