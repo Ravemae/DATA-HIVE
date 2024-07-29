@@ -12,3 +12,10 @@ Throughout the development process, I will be posting updates after each commit 
 
 Best regards,
 Vera Ezeanya, Sodiq Agboke, David Ojekunkle, Timilehin Ilo, John-Paul Anyadiegwu
+
+
+
+
+
+raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.InvalidArgument: 400 Request payload size exceeds the limit: 20971520 bytes. The file size is too large. Please use the File API to upload your files instead. Example: `f = genai.upload_file(path); m.generate_content(['tell me about this file:', f])`
