@@ -4,7 +4,6 @@ import os
 import glob
 
 
-# I want  it to save each 
 def visualize_data(filepath, username):
     AV = AutoViz_Class()
 

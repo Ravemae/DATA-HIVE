@@ -5,7 +5,7 @@ from sqlmodel import Session
 from auth import authenticate_user, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
 from database import get_session
 from routes.sign_upin import signup
-from routes.users import users_route
+from routes.users import users_routes
 from routes.payments import payment_router
 from fastapi.middleware.cors import CORSMiddleware
 

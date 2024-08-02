@@ -1,68 +1,29 @@
-import os
-import requests
-from dotenv import load_dotenv
+import httpx
 
-load_dotenv()
-sk = os.environ.get("paystack_secret_key")
+class PaystackClient:
+    def __init__(self, secret_key):
+        self.secret_key = secret_key
+        self.base_url = "https://api.paystack.co"
 
-class Payment:
-    def __init__(self, key, email, amount):
-        self.key = key
-        self.email = email
-        self.amount = amount * 100
-        self.reference = None
-        
-        
-    def pay(self):
-        url = "https://api.paystack.co/transaction/initialize"
-        data = {
-            "email": self.email,
-            "amount": self.amount 
-        }
-        
+    def verify_transaction(self, reference):
+        url = f"{self.base_url}/transaction/verify/{reference}"
         headers = {
-            "Authorization": "Bearer " + self.key,
+            "Authorization": f"Bearer {self.secret_key}"
+        }
+        response = httpx.get(url, headers=headers)
+        response.raise_for_status()
+        return response.json()
+
+    def initialize_transaction(self, email, amount):
+        url = f"{self.base_url}/transaction/initialize"
+        headers = {
+            "Authorization": f"Bearer {self.secret_key}",
             "Content-Type": "application/json"
         }
-        
-        response = requests.post(url, headers=headers, json=data)
-        if response.status_code == 200:
-            data = response.json() 
-            self.reference = data['data']['reference']
-            auth_link = data['data']['authorization_url']
-            result = {
-                'reference_id': self.reference,
-                'auth_url': auth_link
-                }
-            return result
-        return "404" 
-    
-    
-class Verify:
-    def __init__(self, reference, secret_key):
-        self.reference = reference
-        self.secret_key = secret_key
-
-    def status(self):
-        while True:
-            if not self.reference:
-                return "Reference not found"
-            
-            url = f"https://api.paystack.co/transaction/verify/{self.reference}"
-            headers = {
-                "Authorization": "Bearer " + self.secret_key
-            }
-            
-            
-            response = requests.get(url, headers=headers, json=data)
-            if response.status_code == 200:
-                data = response.json()
-                gateway_response = data['data']['gateway_response']
-                if gateway_response == "Successful":
-                    return "successful"
-                elif gateway_response == "The transaction was not completed":
-                    continue
-                else:
-                    return "failed"
-
-        
+        data = {
+            "email": email,
+            "amount": int(amount * 100)
+        }
+        response = httpx.post(url, headers=headers, json=data)
+        response.raise_for_status()
+        return response.json()

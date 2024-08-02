@@ -1,5 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, File, UploadFile, Form
+from fastapi import APIRouter, Depends, HTTPException, File, UploadFile
 from fastapi.responses import FileResponse
+from fastapi import Body
+from typing import List
 from sqlmodel import Session, select
 from auth import get_current_active_user
 from database import get_session
@@ -22,7 +24,7 @@ SUBSCRIPTION_LIMITS = {
 @users_routes.get("/user/details")
 async def get_user_details(
     session: Session = Depends(get_session),
-    current_user: User = Depends(get_current_active_user)
+    current_user: User = Depends(get_current_active_user)  
 ):
     user = session.exec(select(User).where(User.id == current_user["user"].id)).first()
     if not user:
@@ -35,7 +37,6 @@ async def get_user_details(
         "trials_used": user.trials_used,
         "samples_used": user.samples_used,
     }
-
 
 UPLOAD_DIRECTORY = './uploads'
 if not os.path.exists(UPLOAD_DIRECTORY):
@@ -157,7 +158,7 @@ async def convert_file_to_pdf(
 @users_routes.post("/user/custom_analysis")
 async def perform_custom_analysis(
     file: UploadFile = File(...),
-    columns: list,
+    columns: List[str] = Body(...),
     session: Session = Depends(get_session),
     current_user: User = Depends(get_current_active_user)
 ):
@@ -174,7 +175,11 @@ async def perform_custom_analysis(
     
     analysis_result = custom_analysis(input_file_path, columns)
     
-    return analysis_result
+    # Convert analysis result to PDF
+    output_file_path = f"uploads/{os.path.splitext(file.filename)[0]}_analysis.pdf"
+    convert_to_pdf(analysis_result, output_file_path)
+    
+    return FileResponse(output_file_path, filename=f"{os.path.splitext(file.filename)[0]}_analysis.pdf")
 
 @users_routes.post("/user/clean_data")
 async def clean_dataset(
@@ -195,3 +200,5 @@ async def clean_dataset(
         shutil.copyfileobj(file.file, buffer)
     
     clean_data(input_file_path, output_file_path)
+    
+    return {"message": "Data cleaned successfully.", "output_file": output_file_path}
