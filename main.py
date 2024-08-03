@@ -6,11 +6,13 @@ from auth import authenticate_user, create_access_token, ACCESS_TOKEN_EXPIRE_MIN
 from database import get_session
 from routes.sign_upin import signup
 from routes.users import users_routes
-from routes.payments import payment_router
+from routes.payments import payments_router  
 from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI()
 
+# Middleware setup for CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"], 
@@ -38,20 +40,7 @@ async def login_for_access_token(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
+# Include routers for different routes
 app.include_router(signup, tags=['Signup'])
-app.include_router(users_route, tags=['Users'])
-app.include_router(payment_router, tags=['Payments'])
-
-# from .database import create_db_and_tables, get_db
-# from . import crud, models, schemas, analysis, ai, visualization, export
-
-# @app.on_event("startup")
-# def on_startup():
-#     create_db_and_tables()
-
-# @app.post("/users/", response_model=schemas.User)
-# def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-#     db_user = crud.get_user_by_email(db, email=user.email)
-#     if db_user:
-#         raise HTTPException(status_code=400, detail="Email already registered")
-#     return crud.create_user(db=db, user=models.User(**user.dict()))
+app.include_router(users_routes, tags=['Users'])
+app.include_router(payments_router, tags=['Payments'])

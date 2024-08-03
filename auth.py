@@ -88,4 +88,13 @@ def get_current_active_client(current_user: dict = Depends(get_current_active_us
         raise HTTPException(status_code=403, detail="Not Authorized")
     return current_user["user"]
 
-
+def enforce_subscription_limits(user: User):
+    limits = {
+        "Pro": {"trials": 10, "samples": 10},
+        "Premium": {"trials": 20, "samples": 50}
+    }
+    limit = limits.get(user.subscription_type, {"trials": 0, "samples": 0})
+    if user.trials_used >= limit["trials"]:
+        raise HTTPException(status_code=403, detail="Trial limit exceeded")
+    if user.samples_used >= limit["samples"]:
+        raise HTTPException(status_code=403, detail="Samples limit exceeded")

@@ -1,29 +1,34 @@
-import httpx
+import requests
+import os
+from dotenv import load_dotenv
 
-class PaystackClient:
-    def __init__(self, secret_key):
-        self.secret_key = secret_key
-        self.base_url = "https://api.paystack.co"
+load_dotenv()
 
-    def verify_transaction(self, reference):
-        url = f"{self.base_url}/transaction/verify/{reference}"
-        headers = {
-            "Authorization": f"Bearer {self.secret_key}"
-        }
-        response = httpx.get(url, headers=headers)
-        response.raise_for_status()
+def initialize_transaction(amount: float, email: str, callback_url: str):
+    url = "https://api.paystack.co/transaction/initialize"
+    headers = {
+        "Authorization": f"Bearer {os.getenv('PAYSTACK_SECRET_KEY')}",
+        "Content-Type": "application/json"
+    }
+    data = {
+        "amount": int(amount * 100),  # Paystack requires amount in kobo
+        "email": email,
+        "callback_url": callback_url
+    }
+    response = requests.post(url, json=data, headers=headers)
+    if response.status_code == 200:
         return response.json()
-
-    def initialize_transaction(self, email, amount):
-        url = f"{self.base_url}/transaction/initialize"
-        headers = {
-            "Authorization": f"Bearer {self.secret_key}",
-            "Content-Type": "application/json"
-        }
-        data = {
-            "email": email,
-            "amount": int(amount * 100)
-        }
-        response = httpx.post(url, headers=headers, json=data)
+    else:
         response.raise_for_status()
+
+def verify_paystack_transaction(reference: str, secret_key: str) -> dict:
+    url = f"https://api.paystack.co/transaction/verify/{reference}"
+    headers = {
+        "Authorization": f"Bearer {secret_key}",
+        "Content-Type": "application/json"
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
         return response.json()
+    else:
+        response.raise_for_status()

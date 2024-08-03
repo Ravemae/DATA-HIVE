@@ -8,7 +8,7 @@ load_dotenv()
 def insights(file):
     data = pd.read_csv(file).to_string()
 
-    genai.configure(api_key=os.environ.get('API_KEY'))
+    genai.configure(api_key=os.environ.get('GEMINI_API_KEY'))
 # Choose a model that's appropriate for your use case.
     model = genai.GenerativeModel('gemini-1.5-flash')
 
@@ -62,4 +62,4 @@ Remember, you're talking directly to the CEO. Use simple language, avoid jargon,
     return {"analysis": analysis_text}
     
 
-print(insights('sales_data_sample.csv'))
+# print(insights('sales_data_sample.csv'))
