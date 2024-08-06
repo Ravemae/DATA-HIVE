@@ -8,7 +8,6 @@ class User(SQLModel, table=True):
     fullname: str = Field(unique=True)
     email: str = Field(unique=True)
     password: str
-    profil_pic: str = Field(default=None)
     subscription_type: str = Field(default="Free")
     subscription_status: str = Field(default="Inactive")
     trials_used: int = Field(default=0)

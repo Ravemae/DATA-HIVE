@@ -37,7 +37,8 @@ async def get_user_details(
         "trials_used": user.trials_used,
         "samples_used": user.samples_used,
     }
-
+    
+    
 UPLOAD_DIRECTORY = './uploads'
 if not os.path.exists(UPLOAD_DIRECTORY):
     os.makedirs(UPLOAD_DIRECTORY)
@@ -48,19 +49,17 @@ async def upload_file(file: UploadFile = File(...),
                       current_user: User = Depends(get_current_active_user)):
     user = session.exec(select(User).where(User.id == current_user['user'].id)).first()
     
-    # Check the file type
+
     mimetype, _ = mimetypes.guess_type(file.filename)
     if mimetype not in ["text/csv", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "application/vnd.ms-excel"]:
         raise HTTPException(status_code=400, detail="Only CSV or Excel files are allowed.")
     
-    # Ensure the user hasn't exceeded their sample limit
     limits = SUBSCRIPTION_LIMITS[user.subscription_type]
     if user.samples_used >= limits["samples"]:
         raise HTTPException(status_code=403, detail="Sample limit reached for your subscription plan.")
     
     file_path = f"uploads/{file.filename}"
     
-    # Ensure the uploads directory exists
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     
     # Save the file
@@ -77,7 +76,6 @@ async def upload_file(file: UploadFile = File(...),
     session.commit()
     session.refresh(new_file)
 
-    # Increment the samples used counter
     user.samples_used += 1
     session.commit()
 
@@ -112,7 +110,6 @@ async def visualize(filename: str,
                     current_user: User = Depends(get_current_active_user)):
     user = session.exec(select(User).where(User.id == current_user['user'].id)).first()
     
-    # Ensure the user hasn't exceeded their trial limit
     limits = SUBSCRIPTION_LIMITS[user.subscription_type]
     if user.trials_used >= limits["trials"]:
         raise HTTPException(status_code=403, detail="Trial limit reached for your subscription plan.")

@@ -7,7 +7,7 @@ class Add_user(BaseModel):
     fullname: str
     email: str
     password: str
-    profil_picpath: str
+    
     def hash_password(self):
         self.password = pwd_context.hash(self.password)
         return self.password

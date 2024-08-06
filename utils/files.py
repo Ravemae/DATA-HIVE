@@ -5,7 +5,6 @@ from fpdf import FPDF
 import os
 
 def convert_to_pdf(input_file: str, output_file: str):
-    # Check the file extension to determine how to read the file
     file_extension = os.path.splitext(input_file)[1]
     
     if file_extension == '.csv':
@@ -15,7 +14,6 @@ def convert_to_pdf(input_file: str, output_file: str):
     else:
         raise ValueError("Unsupported file format")
     
-    # Generate PDF using FPDF
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
@@ -28,7 +26,6 @@ def convert_to_pdf(input_file: str, output_file: str):
     pdf.output(output_file)
     
 def custom_analysis(input_file: str, columns: list):
-    # Check the file extension to determine how to read the file
     file_extension = os.path.splitext(input_file)[1]
     
     if file_extension == '.csv':
@@ -56,7 +53,7 @@ def custom_analysis(input_file: str, columns: list):
     return analysis_result
 
 def clean_data(input_file: str, output_file: str):
-    # Check the file extension to determine how to read the file
+    # to determine how to read the file
     file_extension = os.path.splitext(input_file)[1]
     
     if file_extension == '.csv':
@@ -66,13 +63,12 @@ def clean_data(input_file: str, output_file: str):
     else:
         raise ValueError("Unsupported file format")
     
-    # Drop duplicates
     df_cleaned = df.drop_duplicates()
     
     # Drop rows with missing values
     df_cleaned = df_cleaned.dropna()
     
-    # Save the cleaned data to the output file
+    # Save the cleaned data 
     if file_extension == '.csv':
         df_cleaned.to_csv(output_file, index=False)
     else:

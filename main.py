@@ -6,7 +6,6 @@ from auth import authenticate_user, create_access_token, ACCESS_TOKEN_EXPIRE_MIN
 from database import get_session
 from routes.sign_upin import signup
 from routes.users import users_routes
-from routes.payments import payments_router  
 from fastapi.middleware.cors import CORSMiddleware
 
 
@@ -43,4 +42,4 @@ async def login_for_access_token(
 # Include routers for different routes
 app.include_router(signup, tags=['Signup'])
 app.include_router(users_routes, tags=['Users'])
-app.include_router(payments_router, tags=['Payments'])
+# app.include_router(payments_router, tags=['Payments'])
